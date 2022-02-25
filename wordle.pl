@@ -1,5 +1,4 @@
 #!/usr/bin/env perl
-# start with ARISE or ARIES
 use strict;
 use warnings;
 use feature 'say';
@@ -7,44 +6,34 @@ use feature 'say';
 my @dict;
 
 {
+    my %hash;
     open DICT, '<', '/usr/share/dict/words' || die;
     while(<DICT>){
         chomp;
-        push @dict, uc if length == 5;
+        $_ = uc($_);
+        $hash{$_}++ if length == 5;
     }
     close DICT;
+    @dict = keys(%hash);
 }
 
 @dict = grep(!/A/, @dict);
+@dict = grep(!/R/, @dict);
 @dict = grep(!/I/, @dict);
 @dict = grep(!/S/, @dict);
 @dict = grep(!/E/, @dict);
-@dict = grep(!/C/, @dict);
-@dict = grep(!/K/, @dict);
-@dict = grep(!/U/, @dict);
-@dict = grep(!/N/, @dict);
-@dict = grep(!/D/, @dict);
-@dict = grep(!/P/, @dict);
 
-@dict = grep(/R/, @dict);
-@dict = grep(/T/, @dict);
-@dict = grep(/O/, @dict);
-@dict = grep(/B/, @dict);
+say join("\n", sort @dict);
 
-@dict = grep(!/^.R...$/, @dict);
-@dict = grep(!/^T....$/, @dict);
-@dict = grep(!/^..O..$/, @dict);
-@dict = grep(!/^B....$/, @dict);
-@dict = grep(!/^..R..$/, @dict);
-
-{
-    print scalar(@_);
-    print ' ';
-    for(1..5){
-        print pop @_;
-        print ' ';
+for my $i (0..4){
+    say $i;
+    my %hash;
+    for my $word (@dict){
+        $hash{substr($word, $i, 1)}++;
     }
-    say '';
+    for my $char (sort {$hash{$a}-$hash{$b}} keys(%hash)){
+        printf "%3d %s\n", $hash{$char}, $char;
+    }
 }
 
 exit;
