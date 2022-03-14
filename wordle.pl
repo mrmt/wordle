@@ -17,13 +17,13 @@ my @dict;
     @dict = keys(%hash);
 }
 
-@dict = grep(!/A/, @dict);
-@dict = grep(!/R/, @dict);
-@dict = grep(!/I/, @dict);
-@dict = grep(!/S/, @dict);
-@dict = grep(!/E/, @dict);
+@dict = grep(/A/, @dict);
+@dict = grep(/R/, @dict);
+@dict = grep(/I/, @dict);
+@dict = grep(/S/, @dict);
+@dict = grep(/E/, @dict);
 
-say join("\n", sort @dict);
+map {say} (sort @dict);
 
 for my $i (0..4){
     say $i;
@@ -31,7 +31,7 @@ for my $i (0..4){
     for my $word (@dict){
         $hash{substr($word, $i, 1)}++;
     }
-    for my $char (sort {$hash{$a}-$hash{$b}} keys(%hash)){
+    for my $char (sort {$hash{$b}-$hash{$a}} keys(%hash)){
         printf "%3d %s\n", $hash{$char}, $char;
     }
 }
