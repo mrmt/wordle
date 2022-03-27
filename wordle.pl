@@ -1,21 +1,18 @@
 #!/usr/bin/env perl
+# https://www.nytimes.com/games/wordle/
 use strict;
 use warnings;
 use feature 'say';
 
-my @dict;
-
-{
+my @dict = sub {
     my %hash;
-    open DICT, '<', '/usr/share/dict/words' || die;
-    while(<DICT>){
+    open my $dict, '<', shift || die;
+    while(<$dict>){
         chomp;
-        $_ = uc($_);
-        $hash{$_}++ if length == 5;
+        $hash{uc($_)}++ if length == 5;
     }
-    close DICT;
-    @dict = keys(%hash);
-}
+    keys(%hash);
+}->('/usr/share/dict/words');
 
 @dict = grep(/A/, @dict);
 @dict = grep(/R/, @dict);
@@ -25,15 +22,35 @@ my @dict;
 
 map {say} (sort @dict);
 
-for my $i (0..4){
-    say $i;
-    my %hash;
+my $hash = {};
+my $order = {};
+
+for my $position (0..4){
+    $hash->{$position} = {};
+    $order->{$position} = [];
     for my $word (@dict){
-        $hash{substr($word, $i, 1)}++;
+        $hash->{$position}->{substr($word, $position, 1)}++;
     }
-    for my $char (sort {$hash{$b}-$hash{$a}} keys(%hash)){
-        printf "%3d %s\n", $hash{$char}, $char;
+    for my $char (sort {
+        $hash->{$position}->{$b} - $hash->{$position}->{$a}
+                  } keys(%{$hash->{$position}})){
+        push @{$order->{$position}}, $char;
     }
+}
+
+while(1){
+    my @buf;
+    for my $position (0..4){
+        if(my $char = shift @{$order->{$position}}){
+            push @buf, sprintf('%4d %s', $hash->{$position}->{$char}, $char);
+        }else{
+            push @buf, '      ';
+        }
+    }
+
+    my $s = join('  ', @buf);
+    exit if $s =~ /^\s+$/;
+    say $s;
 }
 
 exit;
