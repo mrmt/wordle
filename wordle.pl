@@ -15,15 +15,19 @@ my @dict = sub {
 }->('/usr/share/dict/words');
 
 @dict = grep(/A/, @dict);
+@dict = grep(/^A/, @dict);
 @dict = grep(/R/, @dict);
+@dict = grep(/^.R/, @dict);
 @dict = grep(/I/, @dict);
+@dict = grep(/^..I/, @dict);
 @dict = grep(/S/, @dict);
+@dict = grep(/^...S/, @dict);
 @dict = grep(/E/, @dict);
+@dict = grep(/^....E/, @dict);
 
 map {say} (sort @dict);
 
-my $hash = {};
-my $order = {};
+my ($hash, $order) = ({}, {});
 
 for my $position (0..4){
     $hash->{$position} = {};
