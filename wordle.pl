@@ -2,6 +2,7 @@
 # https://www.nytimes.com/games/wordle/
 use strict;
 use warnings;
+use Data::Dumper;
 use feature 'say';
 
 my @dict = sub {
@@ -13,6 +14,21 @@ my @dict = sub {
     }
     keys(%hash);
 }->('/usr/share/dict/words');
+
+my $apperance = [];
+for my $nth (0..3){
+    $apperance->[$nth] = {};
+    for my $char ('A'..'Z'){
+        $apperance->[$nth]->{$char} = {};
+        my $regex = '^' . '.' x $nth . $char;
+        my @conn_words = grep(/$regex/, @dict);
+        $regex = '.' x ($nth+1)  . '([A-Z])';
+        my @next_chars = map(/$regex/, @conn_words);
+        map($apperance->[$nth]->{$char}->{$_}++, @next_chars);
+    }
+}
+
+say Dumper $apperance;
 
 @dict = grep(/A/, @dict);
 @dict = grep(/^A/, @dict);
